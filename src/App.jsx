@@ -57,7 +57,7 @@ function App() {
           onClick={handleAdd}
           className="bg-violet-800 text-sm mx-1 hover:bg-violet-950 p-2 py-1 rounded-md text-white font-bold"
         >
-          Save
+          {editingIndex !== null ? "Save" : "Add"}
         </button>
       </div>
 
