@@ -3,14 +3,26 @@ import React from "react";
 function App() {
   let [todo, setTodo] = useState("");
   let [todos, setTodos] = useState([]);
+  let [editingIndex, setEditingIndex] = useState(null);
   function handleAdd() {
     if (todo.trim() == "") {
       return;
     }
-    setTodos([...todos, { todo, isCompleted: false }]);
-    setTodo("");
+    if (editingIndex != null) {
+      setTodos(
+        todos.map((item, i) => (i === editingIndex ? { ...item, todo } : item))
+      );
+      setEditingIndex(null);
+    } else {
+      setTodos([...todos, { todo, isCompleted: false }]);
+      setTodo("");
+    }
   }
-  function handleEdit() {}
+  function handleEdit(e) {
+    let index = Number(e.target.name);
+    setTodo(todos[index].todo);
+    setEditingIndex(index);
+  }
   function handleDelete(e) {
     let index = Number(e.target.name);
     setTodos(
@@ -45,7 +57,7 @@ function App() {
           onClick={handleAdd}
           className="bg-violet-800 text-sm mx-1 hover:bg-violet-950 p-2 py-1 rounded-md text-white font-bold"
         >
-          Add
+          Save
         </button>
       </div>
 
@@ -70,6 +82,7 @@ function App() {
               <div className="buttons my-1">
                 <button
                   onClick={handleEdit}
+                  name={index}
                   className="bg-violet-800 text-sm mx-0.5 hover:bg-violet-950 p-2 py-1 rounded-md text-white font-bold"
                 >
                   Edit
