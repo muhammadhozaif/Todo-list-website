@@ -1,9 +1,22 @@
+import { useEffect } from "react";
 import { useState } from "react";
 import React from "react";
 function App() {
   let [todo, setTodo] = useState("");
-  let [todos, setTodos] = useState([]);
   let [editingIndex, setEditingIndex] = useState(null);
+  let [todos, setTodos] = useState(() => {
+    const storedTodos = localStorage.getItem("todos");
+    try {
+      return storedTodos ? JSON.parse(storedTodos) : [];
+    } catch (error) {
+      console.error("Failed to parse todos from localStorage:", error);
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
   function handleAdd() {
     if (todo.trim() == "") {
       return;
@@ -15,9 +28,10 @@ function App() {
       setEditingIndex(null);
     } else {
       setTodos([...todos, { todo, isCompleted: false }]);
-      setTodo("");
     }
+    setTodo("");
   }
+
   function handleEdit(e) {
     let index = Number(e.target.name);
     setTodo(todos[index].todo);
@@ -79,7 +93,7 @@ function App() {
               >
                 {item.todo}
               </div>
-              <div className="buttons my-1">
+              <div className="buttons my-1 flex h-full">
                 <button
                   onClick={handleEdit}
                   name={index}
