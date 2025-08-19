@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import React from "react";
+
 function App() {
+  const [finished, setFinished] = useState(true);
   let [todo, setTodo] = useState("");
   let [editingIndex, setEditingIndex] = useState(null);
   let [todos, setTodos] = useState(() => {
@@ -17,11 +19,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
+
   function handleAdd() {
-    if (todo.trim() == "") {
-      return;
-    }
-    if (editingIndex != null) {
+    if (todo.trim() === "") return;
+
+    if (editingIndex !== null) {
       setTodos(
         todos.map((item, i) => (i === editingIndex ? { ...item, todo } : item))
       );
@@ -37,14 +39,12 @@ function App() {
     setTodo(todos[index].todo);
     setEditingIndex(index);
   }
+
   function handleDelete(e) {
     let index = Number(e.target.name);
-    setTodos(
-      todos.filter((todo, i) => {
-        return index !== i;
-      })
-    );
+    setTodos(todos.filter((todo, i) => index !== i));
   }
+
   function handleToggle(e) {
     let index = Number(e.target.name);
     setTodos(
@@ -53,66 +53,94 @@ function App() {
       )
     );
   }
+
   function handleChange(e) {
     setTodo(e.target.value);
-    console.log(todo);
   }
+
   return (
-    <div className="container mx-auto my-5 rounded-xl p-5 bg-violet-100 min-h-[80vh] ">
-      <div className="addTodo">
-        <h2 className="text-lg font-bold">Add a Todo</h2>
-        <input
-          type="text"
-          onChange={handleChange}
-          value={todo}
-          className="bg-white focus:border-violet-500 focus:ring-2 focus:ring-violet-500 outline-none"
-        />
-        <button
-          onClick={handleAdd}
-          className="bg-violet-800 text-sm mx-1 hover:bg-violet-950 p-2 py-1 rounded-md text-white font-bold"
-        >
-          {editingIndex !== null ? "Save" : "Add"}
-        </button>
+    <div className="container mx-auto my-8 p-6 bg-gradient-to-br from-violet-100 to-violet-200 rounded-xl shadow-lg min-h-[80vh]">
+      <div className="addTodo mb-6">
+        <h2 className="text-2xl font-extrabold mb-3 text-violet-800">
+          Add a Todo
+        </h2>
+        <div className="flex gap-3">
+          <input
+            type="text"
+            onChange={handleChange}
+            value={todo}
+            placeholder="Enter your task..."
+            className="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-violet-400 focus:border-violet-500 outline-none transition-all"
+          />
+          <button
+            onClick={handleAdd}
+            className="bg-violet-700 text-white font-bold px-5 py-2 rounded-lg hover:bg-violet-900 transition-colors shadow-md"
+          >
+            {editingIndex !== null ? "Save" : "Add"}
+          </button>
+        </div>
       </div>
 
-      <h2 className="text-lg font-bold my-5">Your Todos</h2>
-      {todos.map((item, index) => {
-        return (
-          <div key={index} className="todos">
-            <div className="todo flex justify-between w-1/2">
-              <input
-                type="checkbox"
-                checked={item.isCompleted}
-                onChange={handleToggle}
-                name={index}
-              />
+      <div className="flex items-center mb-6 gap-2">
+        <input
+          type="checkbox"
+          checked={finished}
+          onChange={() => setFinished(!finished)}
+          className="h-5 w-5 accent-violet-600"
+        />
+        <span className="text-gray-700 font-medium">Show finished</span>
+      </div>
+
+      <h2 className="text-2xl font-extrabold mb-4 text-violet-800">
+        Your Todos
+      </h2>
+      <div className="space-y-4">
+        {todos.map((item, index) => {
+          return (
+            (finished || !item.isCompleted) && (
               <div
-                className={`text my-3 cursor-pointer ${
-                  item.isCompleted ? "line-through text-gray-400" : "text-black"
-                }`}
+                key={index}
+                className="todo flex items-center justify-between p-4 bg-white rounded-xl shadow hover:shadow-lg transition-shadow"
               >
-                {item.todo}
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={item.isCompleted}
+                    onChange={handleToggle}
+                    name={index}
+                    className="h-5 w-5 accent-violet-600"
+                  />
+                  <span
+                    className={`text-lg ${
+                      item.isCompleted
+                        ? "line-through text-gray-400"
+                        : "text-gray-900"
+                    }`}
+                  >
+                    {item.todo}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleEdit}
+                    name={index}
+                    className="bg-violet-600 text-white px-4 py-1 rounded-lg hover:bg-violet-800 transition-colors shadow-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    name={index}
+                    className="bg-red-500 text-white px-4 py-1 rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-              <div className="buttons my-1 flex h-full">
-                <button
-                  onClick={handleEdit}
-                  name={index}
-                  className="bg-violet-800 text-sm mx-0.5 hover:bg-violet-950 p-2 py-1 rounded-md text-white font-bold"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={handleDelete}
-                  name={index}
-                  className="bg-violet-800 text-sm mx-0.5 hover:bg-violet-950 p-2 py-1 rounded-md text-white font-bold"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+            )
+          );
+        })}
+      </div>
     </div>
   );
 }
