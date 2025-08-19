@@ -11,7 +11,14 @@ function App() {
     setTodo("");
   }
   function handleEdit() {}
-  function handleDelete() {}
+  function handleDelete(e) {
+    let index = Number(e.target.name);
+    setTodos(
+      todos.filter((todo, i) => {
+        return index !== i;
+      })
+    );
+  }
   function handleToggle(e) {
     let index = Number(e.target.name);
     setTodos(
@@ -69,6 +76,7 @@ function App() {
                 </button>
                 <button
                   onClick={handleDelete}
+                  name={index}
                   className="bg-violet-800 text-sm mx-0.5 hover:bg-violet-950 p-2 py-1 rounded-md text-white font-bold"
                 >
                   Delete
