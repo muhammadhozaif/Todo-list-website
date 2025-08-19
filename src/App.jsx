@@ -4,11 +4,22 @@ function App() {
   let [todo, setTodo] = useState("");
   let [todos, setTodos] = useState([]);
   function handleAdd() {
-    setTodos([...todos, todo]);
+    if (todo.trim() == "") {
+      return;
+    }
+    setTodos([...todos, { todo, isCompleted: false }]);
     setTodo("");
   }
   function handleEdit() {}
   function handleDelete() {}
+  function handleToggle(e) {
+    let index = Number(e.target.name);
+    setTodos(
+      todos.map((item, i) =>
+        i === index ? { ...item, isCompleted: !item.isCompleted } : item
+      )
+    );
+  }
   function handleChange(e) {
     setTodo(e.target.value);
     console.log(todo);
@@ -31,13 +42,25 @@ function App() {
         </button>
       </div>
 
-      <h2 className="text-lg font-bold">Your Todos</h2>
+      <h2 className="text-lg font-bold my-5">Your Todos</h2>
       {todos.map((item, index) => {
         return (
           <div key={index} className="todos">
-            <div className="todo flex">
-              <div className="text">{item}</div>
-              <div className="buttons">
+            <div className="todo flex justify-between w-1/2">
+              <input
+                type="checkbox"
+                checked={item.isCompleted}
+                onChange={handleToggle}
+                name={index}
+              />
+              <div
+                className={`text my-3 cursor-pointer ${
+                  item.isCompleted ? "line-through text-gray-400" : "text-black"
+                }`}
+              >
+                {item.todo}
+              </div>
+              <div className="buttons my-1">
                 <button
                   onClick={handleEdit}
                   className="bg-violet-800 text-sm mx-0.5 hover:bg-violet-950 p-2 py-1 rounded-md text-white font-bold"
